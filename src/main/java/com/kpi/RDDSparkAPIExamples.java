@@ -46,14 +46,14 @@ public class RDDSparkAPIExamples {
 
     private static void joinFunction(final JavaSparkContext sparkContext) {
         JavaRDD<String> honeyProductions = sparkContext.textFile(HONEYPRODUCTION_WITHOUT_HEADER_CSV);
-        JavaRDD<String> honeyRaws = sparkContext.textFile(HONEYRAW_1998TO2002_CSV);
+        JavaRDD<String> honeyRaws = sparkContext.textFile(HONEYRAW_1998TO2002_CSV_WITHOUT_HEADER);
 
         JavaPairRDD stateGrouped = honeyProductions.map(line -> line.split(CSV_SEPARATOR))
                 .mapToPair(line -> new Tuple2<>(line[0], Double.valueOf(line[1])))
                 .reduceByKey((value1, value2) -> value1 + value2);
 
         JavaPairRDD rawsGrouped = honeyRaws.map(line -> line.split(CSV_SEPARATOR))
-                .mapToPair(line -> new Tuple2<>(line[2], line[1]))
+                .mapToPair(line -> new Tuple2<>(line[2], Integer.valueOf(line[0])))
                 .reduceByKey((value1, value2) -> value1 + value2);
 
         stateGrouped.join(rawsGrouped)
