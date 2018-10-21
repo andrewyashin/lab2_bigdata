@@ -6,7 +6,8 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
 
-import static com.kpi.SQLSparkAPIExamples.*;
+import static com.kpi.LabHelper.*;
+
 
 public class RDDSparkAPIExamples {
 
@@ -24,7 +25,7 @@ public class RDDSparkAPIExamples {
     }
 
     private static void countTotalNumberOfRowsByState(final JavaSparkContext sparkContext, final String state) {
-        JavaRDD<String> honeyProductions = sparkContext.textFile(HONEYPRODUCTION_CSV);
+        JavaRDD<String> honeyProductions = sparkContext.textFile(HONEYPRODUCTION_WITHOUT_HEADER_CSV);
         long countALStateRows = honeyProductions.map(line -> line.split(CSV_SEPARATOR))
                 .mapToPair(line -> new Tuple2<>(line[0], line))
                 .filter(tuple -> tuple._1.contains(state))
@@ -33,7 +34,7 @@ public class RDDSparkAPIExamples {
     }
 
     private static void filterHoneyByNumCol(final JavaSparkContext sparkContext) {
-        JavaRDD<String> honeyProductions = sparkContext.textFile(HONEYPRODUCTION_CSV);
+        JavaRDD<String> honeyProductions = sparkContext.textFile(HONEYPRODUCTION_WITHOUT_HEADER_CSV);
         honeyProductions.map(line -> line.split(CSV_SEPARATOR))
                 .mapToPair(line -> new Tuple2<>(Double.valueOf(line[1]), line))
                 .filter(tuple -> tuple._1 < NUMCOL_MAX)
@@ -44,7 +45,7 @@ public class RDDSparkAPIExamples {
     }
 
     private static void joinFunction(final JavaSparkContext sparkContext) {
-        JavaRDD<String> honeyProductions = sparkContext.textFile(HONEYPRODUCTION_CSV);
+        JavaRDD<String> honeyProductions = sparkContext.textFile(HONEYPRODUCTION_WITHOUT_HEADER_CSV);
         JavaRDD<String> honeyRaws = sparkContext.textFile(HONEYRAW_1998TO2002_CSV);
 
         JavaPairRDD stateGrouped = honeyProductions.map(line -> line.split(CSV_SEPARATOR))
