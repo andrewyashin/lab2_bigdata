@@ -49,13 +49,13 @@ public class RDDSparkAPIExamples {
         JavaRDD<String> statesNames = sparkContext.textFile(STATES_WITHOUT_HEADER_CSV);
 
         JavaPairRDD stateGrouped = honeyProductions.map(line -> line.split(CSV_SEPARATOR))
-                .mapToPair(line -> new Tuple2<>(line[0], Double.valueOf(line[1])))
+                .mapToPair(line -> new Tuple2<>(line[0], Double.valueOf(line[2])))
                 .reduceByKey((value1, value2) -> value1 + value2);
 
-        JavaPairRDD rawsGrouped = statesNames.map(line -> line.split(CSV_SEPARATOR))
+        JavaPairRDD statesGrouped = statesNames.map(line -> line.split(CSV_SEPARATOR))
                 .mapToPair(line -> new Tuple2<>(line[1], line[0]));
 
-        stateGrouped.join(rawsGrouped)
+        stateGrouped.join(statesGrouped)
                 .collect()
                 .forEach(System.out::println);
 
