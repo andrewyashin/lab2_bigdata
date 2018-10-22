@@ -3,7 +3,13 @@ package com.kpi;
 import org.apache.spark.sql.DataFrameReader;
 import org.apache.spark.sql.SparkSession;
 
-import static com.kpi.LabHelper.*;
+import static com.kpi.LabHelper.AL_STATE;
+import static com.kpi.LabHelper.APP_NAME;
+import static com.kpi.LabHelper.HONEYPRODUCTION_CSV;
+import static com.kpi.LabHelper.MASTER;
+import static com.kpi.LabHelper.NUMCOL_MAX;
+import static com.kpi.LabHelper.NUMCOL_MIN;
+import static com.kpi.LabHelper.STATES_CSV;
 
 public class SQLSparkAPIExamples {
 
@@ -16,18 +22,9 @@ public class SQLSparkAPIExamples {
             "CAST(prodvalue as double) prodvalue, " +
             "CAST(year as double) year " +
             "FROM HONEY";
-    private static final String CAST_SQL_SCHEMA_HONEYRAW = "SELECT CAST(id as double) id," +
-            "letter, " +
-            "state, " +
-            "header4, " +
-            "header5, " +
-            "header6, " +
-            "header7, " +
-            "header8 " +
-            "FROM HONEYRAW";
 
     private static final String HONEY_TABLE_NAME = "HONEY";
-    private static final String HONEY_RAW_TABLE_NAME = "HONEYRAW";
+    private static final String STATES_NAMES_TABLE_NAME = "STATES_NAMES";
 
     public static void main(String[] args) {
         final SparkSession sparkSession = SparkSession.builder()
@@ -39,10 +36,9 @@ public class SQLSparkAPIExamples {
         final DataFrameReader dataFrameReader = sparkSession.read();
         dataFrameReader.option("header", "true");
         dataFrameReader.csv(HONEYPRODUCTION_CSV).createOrReplaceTempView(HONEY_TABLE_NAME);
-        dataFrameReader.csv(HONEYRAW_1998TO2002_CSV).createOrReplaceTempView(HONEY_RAW_TABLE_NAME);
+        dataFrameReader.csv(STATES_CSV).createOrReplaceTempView(STATES_NAMES_TABLE_NAME);
 
         sparkSession.sql(CAST_SQL_SCHEMA_HONEY);
-        sparkSession.sql(CAST_SQL_SCHEMA_HONEYRAW);
 
         countTotalNumberOfRowsByState(sparkSession, AL_STATE);
         filterHoneyByNumCol(sparkSession);
@@ -61,10 +57,13 @@ public class SQLSparkAPIExamples {
     }
 
     private static void joinFunction(final SparkSession sparkSession) {
-//        sparkSession.sql("SELECT honey.state, SUM(honey.yieldpercol)," +
-//                " (SELECT SUM(row.id) FROM HONEYRAW AS row WHERE row.state = honey.state)" +
-//                " FROM HONEY AS honey" +
-//                " GROUP BY honey.state")
-//                .show();
+        sparkSession.sql("SELECT SUM(honey.yieldpercol) AS sum_yieldpercol, " +
+                "honey.state, " +
+                "state.fullName " +
+                "FROM HONEY AS honey " +
+                "INNER JOIN STATES_NAMES AS state " +
+                "ON honey.state = state.state " +
+                "GROUP BY honey.state, state.fullName").show();
     }
 }
+

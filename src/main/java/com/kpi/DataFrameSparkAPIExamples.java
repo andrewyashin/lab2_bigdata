@@ -5,7 +5,11 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
-import static com.kpi.LabHelper.*;
+import static com.kpi.LabHelper.AL_STATE;
+import static com.kpi.LabHelper.HONEYPRODUCTION_CSV;
+import static com.kpi.LabHelper.NUMCOL_MAX;
+import static com.kpi.LabHelper.NUMCOL_MIN;
+import static com.kpi.LabHelper.STATES_CSV;
 
 public class DataFrameSparkAPIExamples {
     public static void main(String[] args) {
@@ -18,11 +22,11 @@ public class DataFrameSparkAPIExamples {
         final DataFrameReader dataFrameReader = sparkSession.read();
         dataFrameReader.option("header", "true");
         final Dataset<Row> honeyDataSet = dataFrameReader.csv(HONEYPRODUCTION_CSV);
-        final Dataset<Row> honeyRawDataSet = dataFrameReader.csv(HONEYRAW_1998TO2002_CSV);
+        final Dataset<Row> statesDataset = dataFrameReader.csv(STATES_CSV);
 
         countTotalNumberOfRowsByState(honeyDataSet, AL_STATE);
         filterHoneyByNumCol(honeyDataSet);
-        joinFunction(honeyDataSet, honeyRawDataSet);
+        joinFunction(honeyDataSet.as("honey"), statesDataset.as("states"));
     }
 
     private static void countTotalNumberOfRowsByState(final Dataset dataset, final String state) {
@@ -35,10 +39,9 @@ public class DataFrameSparkAPIExamples {
                 .sort("numcol").show();
     }
 
-    private static void joinFunction(final Dataset honeyDataset, final Dataset honeyrawDataset) {
-//        honeyDataset.groupBy(col("state")).agg(sum("yieldpercol"))
-//                    .join(honeyrawDataset).;
-
-
+    private static void joinFunction(final Dataset honeyDataset, final Dataset statesDataset) {
+//        honeyDataset.join(statesDataset, "state")
+//                .select(sum("honey.yieldpercol"), col("honey.state"), col("states.fullName"))
+//                .groupBy(col("honey.state"), col("states.fullName")).agg(count("*")).show();
     }
 }

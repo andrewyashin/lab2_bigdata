@@ -6,7 +6,14 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
 
-import static com.kpi.LabHelper.*;
+import static com.kpi.LabHelper.AL_STATE;
+import static com.kpi.LabHelper.APP_NAME;
+import static com.kpi.LabHelper.CSV_SEPARATOR;
+import static com.kpi.LabHelper.HONEYPRODUCTION_WITHOUT_HEADER_CSV;
+import static com.kpi.LabHelper.MASTER;
+import static com.kpi.LabHelper.NUMCOL_MAX;
+import static com.kpi.LabHelper.NUMCOL_MIN;
+import static com.kpi.LabHelper.STATES_WITHOUT_HEADER_CSV;
 
 
 public class RDDSparkAPIExamples {
@@ -46,20 +53,18 @@ public class RDDSparkAPIExamples {
 
     private static void joinFunction(final JavaSparkContext sparkContext) {
         JavaRDD<String> honeyProductions = sparkContext.textFile(HONEYPRODUCTION_WITHOUT_HEADER_CSV);
-        JavaRDD<String> honeyRaws = sparkContext.textFile(HONEYRAW_1998TO2002_CSV_WITHOUT_HEADER);
+        JavaRDD<String> statesNames = sparkContext.textFile(STATES_WITHOUT_HEADER_CSV);
 
         JavaPairRDD stateGrouped = honeyProductions.map(line -> line.split(CSV_SEPARATOR))
                 .mapToPair(line -> new Tuple2<>(line[0], Double.valueOf(line[1])))
                 .reduceByKey((value1, value2) -> value1 + value2);
 
-        JavaPairRDD rawsGrouped = honeyRaws.map(line -> line.split(CSV_SEPARATOR))
-                .mapToPair(line -> new Tuple2<>(line[2], Integer.valueOf(line[0])))
-                .reduceByKey((value1, value2) -> value1 + value2);
+        JavaPairRDD rawsGrouped = statesNames.map(line -> line.split(CSV_SEPARATOR))
+                .mapToPair(line -> new Tuple2<>(line[1], line[0]));
 
         stateGrouped.join(rawsGrouped)
                 .collect()
                 .forEach(System.out::println);
-
 
     }
 }
