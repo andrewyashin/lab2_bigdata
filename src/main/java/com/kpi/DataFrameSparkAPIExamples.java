@@ -19,11 +19,11 @@ public class DataFrameSparkAPIExamples {
         final DataFrameReader dataFrameReader = sparkSession.read();
         dataFrameReader.option("header", "true");
         final Dataset<Row> honeyDataSet = dataFrameReader.csv(HONEYPRODUCTION_CSV);
-        final Dataset<Row> statesDataset = dataFrameReader.csv(STATES_CSV);
+        final Dataset<Row> statesDataSet = dataFrameReader.csv(STATES_CSV);
 
         countTotalNumberOfRowsByState(honeyDataSet, AL_STATE);
         filterHoneyByNumCol(honeyDataSet);
-        joinFunction(honeyDataSet.as("honey"), statesDataset.as("states"));
+        joinFunction(honeyDataSet.as("honey"), statesDataSet.as("states"));
     }
 
     private static void countTotalNumberOfRowsByState(final Dataset dataset, final String state) {
@@ -36,8 +36,8 @@ public class DataFrameSparkAPIExamples {
                 .sort("numcol").show();
     }
 
-    private static void joinFunction(final Dataset honeyDataset, final Dataset statesDataset) {
-        honeyDataset.groupBy("state").agg(sum("yieldpercol"))
-                .join(statesDataset, "state").show();
+    private static void joinFunction(final Dataset honeyDataSet, final Dataset statesDataSet) {
+        honeyDataSet.groupBy("state").agg(sum("yieldpercol"))
+                .join(statesDataSet, "state").show();
     }
 }
