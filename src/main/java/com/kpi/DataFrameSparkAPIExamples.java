@@ -5,11 +5,8 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 
-import static com.kpi.LabHelper.AL_STATE;
-import static com.kpi.LabHelper.HONEYPRODUCTION_CSV;
-import static com.kpi.LabHelper.NUMCOL_MAX;
-import static com.kpi.LabHelper.NUMCOL_MIN;
-import static com.kpi.LabHelper.STATES_CSV;
+import static com.kpi.LabHelper.*;
+import static org.apache.spark.sql.functions.sum;
 
 public class DataFrameSparkAPIExamples {
     public static void main(String[] args) {
@@ -40,8 +37,7 @@ public class DataFrameSparkAPIExamples {
     }
 
     private static void joinFunction(final Dataset honeyDataset, final Dataset statesDataset) {
-//        honeyDataset.join(statesDataset, "state")
-//                .select(sum("honey.yieldpercol"), col("honey.state"), col("states.fullName"))
-//                .groupBy(col("honey.state"), col("states.fullName")).agg(count("*")).show();
+        honeyDataset.groupBy("state").agg(sum("yieldpercol"))
+                .join(statesDataset, "state").show();
     }
 }
