@@ -6,14 +6,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
 
-import static com.kpi.LabHelper.AL_STATE;
-import static com.kpi.LabHelper.APP_NAME;
-import static com.kpi.LabHelper.CSV_SEPARATOR;
-import static com.kpi.LabHelper.HONEYPRODUCTION_WITHOUT_HEADER_CSV;
-import static com.kpi.LabHelper.MASTER;
-import static com.kpi.LabHelper.NUMCOL_MAX;
-import static com.kpi.LabHelper.NUMCOL_MIN;
-import static com.kpi.LabHelper.STATES_WITHOUT_HEADER_CSV;
+import static com.kpi.LabHelper.*;
 
 
 public class RDDSparkAPIExamples {

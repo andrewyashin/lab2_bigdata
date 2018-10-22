@@ -1,15 +1,8 @@
 package com.kpi;
 
-import org.apache.spark.sql.DataFrameReader;
 import org.apache.spark.sql.SparkSession;
 
-import static com.kpi.LabHelper.AL_STATE;
-import static com.kpi.LabHelper.APP_NAME;
-import static com.kpi.LabHelper.HONEYPRODUCTION_CSV;
-import static com.kpi.LabHelper.MASTER;
-import static com.kpi.LabHelper.NUMCOL_MAX;
-import static com.kpi.LabHelper.NUMCOL_MIN;
-import static com.kpi.LabHelper.STATES_CSV;
+import static com.kpi.LabHelper.*;
 
 public class SQLSparkAPIExamples {
 
@@ -33,10 +26,8 @@ public class SQLSparkAPIExamples {
                 .config("spark.sql.warehouse.dir", "src/main/resources/")
                 .getOrCreate();
 
-        final DataFrameReader dataFrameReader = sparkSession.read();
-        dataFrameReader.option("header", "true");
-        dataFrameReader.csv(HONEYPRODUCTION_CSV).createOrReplaceTempView(HONEY_TABLE_NAME);
-        dataFrameReader.csv(STATES_CSV).createOrReplaceTempView(STATES_NAMES_TABLE_NAME);
+        sparkSession.read().option("header", "true").csv(HONEYPRODUCTION_CSV).createOrReplaceTempView(HONEY_TABLE_NAME);
+        sparkSession.read().option("header", "true").csv(STATES_CSV).createOrReplaceTempView(STATES_NAMES_TABLE_NAME);
 
         sparkSession.sql(CAST_SQL_SCHEMA_HONEY);
 
